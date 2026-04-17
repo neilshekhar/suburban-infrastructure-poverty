@@ -1,0 +1,29 @@
+.venv/
+__pycache__/
+**/__pycache__/
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+.DS_Store
+**/.DS_Store
+.vscode/
+
+# Local data and exports live in Mediaflux, not Git.
+data/
+outputs/
+local_data/
+raw_data/
+processed_data/
+mediaflux/
+Mediaflux/
+
+# Spatial data and generated deliverables.
+*.gpkg
+*.geojson
+*.csv
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+*.html
+map*.json
