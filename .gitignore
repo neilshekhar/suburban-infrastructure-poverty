@@ -26,4 +26,4 @@ Mediaflux/
 *.prj
 *.cpg
 *.html
-map*.json
+*_config.json

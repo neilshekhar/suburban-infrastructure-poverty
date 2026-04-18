@@ -13,7 +13,7 @@ This GitHub repo contains only lightweight, reproducible project files:
 - `notebooks/infra_map.ipynb`: the active end-to-end analysis notebook.
 - `README.md`, `CONVENTIONS.md`, `requirements.txt`, and `.gitignore`: project documentation and setup files.
 
-The repo should not include local data, processed GeoPackages, exported GeoJSON/CSV files, Kepler HTML files, or Kepler `map*.json` exports. Those files live in Mediaflux and are ignored by Git.
+The repo should not include local data, processed GeoPackages, exported GeoJSON/CSV files, Kepler HTML files, or Kepler `*_config.json` exports. Those files live in Mediaflux and are ignored by Git.
 
 Notebook files are committed without saved cell outputs. This keeps GitHub lightweight and prevents local absolute paths or large data previews from being published.
 
@@ -46,21 +46,21 @@ Open `notebooks/infra_map.ipynb`. In the first configuration cell, edit `POPULAT
 
 The working notebook produces five export files for downstream mapping and review:
 
-- `kepler_population_growth.geojson`: Map A polygon layer with SA2 population growth and facility count metrics.
-- `kepler_infrastructure_points.geojson`: Map A point layer with infrastructure facilities categorized for Kepler.gl.
-- `kepler_population_timeseries.geojson`: Map B polygon layer with annual population snapshots for the time animation.
-- `kepler_infrastructure_timeseries.geojson`: Map B point layer with infrastructure facility timestamps aligned to the animation window.
+- `kepler_population_growth.geojson`: Current Infrastructure Poverty polygon layer with SA2 population growth and facility count metrics.
+- `kepler_infrastructure_points.geojson`: Current Infrastructure Poverty point layer with infrastructure facilities categorized for Kepler.gl.
+- `kepler_population_timeseries.geojson`: Infrastructure Poverty Timeline polygon layer with annual population snapshots for the time animation.
+- `kepler_infrastructure_timeseries.geojson`: Infrastructure Poverty Timeline point layer with infrastructure facility timestamps aligned to the animation window.
 - `infrastructure_poverty_summary.csv`: Tabular summary of population growth, facility counts, and facility-density metrics by SA2.
 
 Export files are stored in Mediaflux, not GitHub.
 
-Kepler map deliverables are also stored in Mediaflux, including HTML exports and `map*.json` configuration exports such as `map_a_config.json` and `map_b_config.json`.
+Kepler map deliverables are also stored in Mediaflux, including HTML exports such as `current_infrastructure_poverty.html` and `infrastructure_poverty_timeline.html`, and their paired configuration exports `current_infrastructure_poverty_config.json` and `infrastructure_poverty_timeline_config.json`.
 
-## Map A vs Map B
+## Current Infrastructure Poverty vs Infrastructure Poverty Timeline
 
-Map A is the current-period (i.e 2024) infrastructure poverty view. It uses 2021-baseline population growth metrics and current infrastructure counts to show where Greater Melbourne suburbs have added people without a comparable level of facilities and services.
+Current Infrastructure Poverty is the current-period (i.e 2024) view. It uses 2021-baseline population growth metrics and current infrastructure counts to show where Greater Melbourne suburbs have added people without a comparable level of facilities and services.
 
-Map B is the time-series view. It uses a 2010 baseline to animate population growth and infrastructure availability through 2024, making it easier to see whether service provision has kept pace over time.
+Infrastructure Poverty Timeline is the time-series view. It uses a 2010 baseline to animate population growth and infrastructure availability through 2024, making it easier to see whether service provision has kept pace over time.
 
 ## Contributors
 
