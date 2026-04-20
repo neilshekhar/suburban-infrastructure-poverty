@@ -60,7 +60,7 @@ Kepler map deliverables are also stored in Mediaflux, including HTML exports suc
 
 Current Infrastructure Poverty is the current-period (2024) view. It uses 2021-baseline population growth metrics, 2024 population, and facilities created on or before `2024-12-31` to show where Greater Melbourne suburbs have added people without a comparable level of facilities and services.
 
-Infrastructure Poverty Timeline is the time-series view. It uses a 2010 baseline to animate population growth and infrastructure availability through 2024, making it easier to see whether service provision has kept pace over time.
+Infrastructure Poverty Timeline is the time-series view. It uses a 2010 baseline to animate population growth and infrastructure availability through 2024, making it easier to see whether service provision has kept pace over time. Timeline polygon counts are annual `June 30` snapshots, while point facilities animate by their actual creation dates; therefore the 2024 timeline polygon tooltip may differ slightly from the full-year Current Infrastructure Poverty snapshot.
 
 ## Contributors
 
