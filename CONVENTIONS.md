@@ -12,7 +12,7 @@ These conventions capture non-obvious project decisions so future contributors a
 - Spatial clipping uses `gpd.clip()` against a dissolved Melbourne boundary, not spatial joins with `intersects`.
 - Monuments are deliberately excluded from infrastructure categories.
 - `CRDATE_PFI` dates before 2010 are unreliable Vicmap bulk-load artifacts.
-- Current Infrastructure Poverty uses 2021-baseline metrics.
+- Current Infrastructure Poverty uses 2021-baseline metrics with 2024 population and facilities created on or before `2024-12-31`.
 - Infrastructure Poverty Timeline uses a 2010 baseline.
 - Infrastructure Poverty Timeline clamps pre-2010 facilities to `2010-01-01`.
 - Infrastructure Poverty Timeline drops facilities created after `2024-12-31`.

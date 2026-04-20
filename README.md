@@ -46,8 +46,8 @@ Open `notebooks/infra_map.ipynb`. In the first configuration cell, edit `POPULAT
 
 The working notebook produces five export files for downstream mapping and review:
 
-- `kepler_population_growth.geojson`: Current Infrastructure Poverty polygon layer with SA2 population growth and facility count metrics.
-- `kepler_infrastructure_points.geojson`: Current Infrastructure Poverty point layer with infrastructure facilities categorized for Kepler.gl.
+- `kepler_population_growth.geojson`: Current Infrastructure Poverty polygon layer with SA2 population growth and facility count metrics using facilities created by `2024-12-31`.
+- `kepler_infrastructure_points.geojson`: Current Infrastructure Poverty point layer with infrastructure facilities categorized for Kepler.gl and created by `2024-12-31`.
 - `kepler_population_timeseries.geojson`: Infrastructure Poverty Timeline polygon layer with annual population snapshots for the time animation.
 - `kepler_infrastructure_timeseries.geojson`: Infrastructure Poverty Timeline point layer with infrastructure facility timestamps aligned to the animation window.
 - `infrastructure_poverty_summary.csv`: Tabular summary of population growth, facility counts, and facility-density metrics by SA2.
@@ -58,7 +58,7 @@ Kepler map deliverables are also stored in Mediaflux, including HTML exports suc
 
 ## Current Infrastructure Poverty vs Infrastructure Poverty Timeline
 
-Current Infrastructure Poverty is the current-period (i.e 2024) view. It uses 2021-baseline population growth metrics and current infrastructure counts to show where Greater Melbourne suburbs have added people without a comparable level of facilities and services.
+Current Infrastructure Poverty is the current-period (2024) view. It uses 2021-baseline population growth metrics, 2024 population, and facilities created on or before `2024-12-31` to show where Greater Melbourne suburbs have added people without a comparable level of facilities and services.
 
 Infrastructure Poverty Timeline is the time-series view. It uses a 2010 baseline to animate population growth and infrastructure availability through 2024, making it easier to see whether service provision has kept pace over time.
 
