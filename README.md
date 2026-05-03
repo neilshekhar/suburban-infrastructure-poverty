@@ -1,10 +1,10 @@
 # Suburban Infrastructure Poverty
 
-Suburban Infrastructure Poverty is an MDAP / Suburban Futures project at the University of Melbourne that maps infrastructure poverty and related suburban change patterns across Greater Melbourne. The project currently includes infrastructure-poverty maps built from population growth and public facility locations, plus a home-based business density map showing where Melbourne's non-employing business economy is concentrated and changing over time.
+Suburban Infrastructure Poverty is an MDAP / Suburban Futures project at the University of Melbourne that maps infrastructure poverty and related suburban change patterns across Greater Melbourne. The project currently includes infrastructure-poverty maps built from population growth and public facility locations, plus a self-employed business density map showing where Melbourne's non-employing business economy is concentrated and changing over time.
 
 ## Data Sources
 
-The infrastructure-poverty workflow uses Australian Bureau of Statistics estimated resident population data to 2024 and Vicmap Features of Interest infrastructure data. The home-based business workflow uses ABS Counts of Australian Businesses, including Entries and Exits (CABEE) SA2-by-industry-by-employment-size releases and ABS Estimated Resident Population by age and sex.
+The infrastructure-poverty workflow uses Australian Bureau of Statistics estimated resident population data to 2024 and Vicmap Features of Interest infrastructure data. The self-employed business workflow uses ABS Counts of Australian Businesses, including Entries and Exits (CABEE) SA2-by-industry-by-employment-size releases and ABS Estimated Resident Population by age and sex.
 
 The local data files used by the notebooks, including `population.gpkg`, `melbourne.gpkg`, Vicmap shapefiles, CABEE Excel workbooks, ERP age/sex Excel workbooks, and generated map deliverables, are stored in the project Mediaflux collection.
 
@@ -13,7 +13,8 @@ The local data files used by the notebooks, including `population.gpkg`, `melbou
 This GitHub repo contains only lightweight, reproducible project files:
 
 - `notebooks/infra_map.ipynb`: the active end-to-end infrastructure-poverty workflow.
-- `notebooks/home_business_map.ipynb`: the active Map 3 workflow for home-based business density.
+- `notebooks/home_business_map.ipynb`: the active Map 3 workflow for self-employed business density.
+- `scripts/map3_presentation_insights.py`: pandas-only helper script for presentation headline numbers from the processed Map 3 tables.
 - `README.md`, `CONVENTIONS.md`, `requirements.txt`, and `.gitignore`: project documentation and setup files.
 
 The repo should not include local data, processed GeoPackages, exported GeoJSON/CSV files, Kepler HTML files, Plotly HTML files, preview PNG files, or Kepler `*_config.json` exports. Those files live in Mediaflux and are ignored by Git.
@@ -47,9 +48,15 @@ jupyter nbconvert --clear-output --inplace notebooks/infra_map.ipynb notebooks/h
 
 Open `notebooks/infra_map.ipynb`. In the first configuration cell, edit `POPULATION_PATH` and `INFRA_PATH` so they point to the local Mediaflux copies of `population.gpkg` and `FOI_POINT.shp`. Then run all cells from top to bottom.
 
-### Home-Based Business Density
+### Self-Employed Business Density
 
 Open `notebooks/home_business_map.ipynb`. The notebook has three main sections: source-file inspection, analysis-table build, and map-output build. Confirm the CABEE Excel workbooks, ERP age/sex workbook, and `melbourne.gpkg` are available in the expected local `data/` paths from Mediaflux, then run the relevant cells from top to bottom.
+
+To print the Map 3 presentation insight numbers from the processed tables, run:
+
+```bash
+python scripts/map3_presentation_insights.py
+```
 
 ## Outputs
 
@@ -65,10 +72,11 @@ Export files are stored in Mediaflux, not GitHub.
 
 Kepler map deliverables are also stored in Mediaflux, including HTML exports such as `current_infrastructure_poverty.html` and `infrastructure_poverty_timeline.html`, and their paired configuration exports `current_infrastructure_poverty_config.json` and `infrastructure_poverty_timeline_config.json`.
 
-`notebooks/home_business_map.ipynb` produces these local deliverables for Map 3:
+The Map 3 notebook and presentation-insights script produce these local deliverables:
 
 - `map3_home_business_density.csv`: tidy SA2-year table for 2019-2025 with non-employing businesses, working-age population, per-1,000 metrics, change since 2019, and view-inclusion flags.
-- `map3_home_business_pipeline_log.txt`: pipeline sanity log for QA and methodology review.
+- `map3_home_business_density_by_industry.csv`: industry-preserved SA2-year table used by the interactive industry filter.
+- `map3_presentation_insights_summary.csv`: compact summary table of presentation headline numbers from `scripts/map3_presentation_insights.py`.
 - `home_business_density.html`: interactive Plotly map with Residential Melbourne and All Melbourne view toggles, year sliders, and Play/Pause animation controls.
 - `home_business_density_2025_preview.png`: static 2025 preview image for slides or review.
 
@@ -80,9 +88,9 @@ Current Infrastructure Poverty is the current-period (2024) view. It uses 2021-b
 
 Infrastructure Poverty Timeline is the time-series view. It uses a 2010 baseline to animate population growth and infrastructure availability through 2024, making it easier to see whether service provision has kept pace over time. Timeline polygon counts are annual `June 30` snapshots, while point facilities animate by their actual creation dates; therefore the 2024 timeline polygon tooltip may differ slightly from the full-year Current Infrastructure Poverty snapshot.
 
-## Home-Based Business Density
+## Self-Employed Business Density
 
-Home-Based Business Density is Map 3. It maps non-employing businesses per 1,000 working-age residents by SA2 from 2019 to 2025, using working-age population aged 15-64 as the denominator. The default view focuses on Residential Melbourne by excluding SA2s with working-age population below 500 and showing seven CBD/Southbank/industrial-estate SA2s only in the alternate view; the alternate view keeps the same population floor but includes those flagged central/distortion areas.
+Self-Employed Business Density is Map 3. It maps non-employing businesses per 1,000 working-age residents by SA2 from 2019 to 2025, using working-age population aged 15-64 as the denominator. The default view focuses on Residential Melbourne by excluding SA2s with working-age population below 500 and showing seven CBD/Southbank/industrial-estate SA2s only in the alternate view; the alternate view keeps the same population floor but includes those flagged central/distortion areas. The interactive HTML includes an industry filter so the aggregate self-employed pattern can be compared with ANZSIC division-specific patterns.
 
 ## Contributors
 

@@ -2,12 +2,12 @@
 
 These conventions capture non-obvious project decisions so future contributors and AI assistants do not accidentally reverse them.
 
-- Keep Git lightweight: commit notebooks, docs, and dependency files only.
+- Keep Git lightweight: commit notebooks, scripts, docs, and dependency files only.
 - Keep local data and generated exports in Mediaflux, not GitHub.
 - Do not commit `data/`, `outputs/`, GeoPackages, shapefiles, GeoJSON, CSV, Kepler HTML, or Kepler `*_config.json` exports.
 - Commit notebooks without saved cell outputs so local absolute paths and large data previews are not published.
 - Treat `notebooks/infra_map.ipynb` as the active end-to-end workflow.
-- Treat `notebooks/home_business_map.ipynb` as the active Map 3 workflow for home-based business density.
+- Treat `notebooks/home_business_map.ipynb` as the active Map 3 workflow for self-employed business density.
 - Use GDA2020 (`EPSG:7844`) throughout the working spatial data.
 - Use `EPSG:7855` only for centroid and buffering operations that require projected distances.
 - Spatial clipping uses `gpd.clip()` against a dissolved Melbourne boundary, not spatial joins with `intersects`.
@@ -30,5 +30,8 @@ These conventions capture non-obvious project decisions so future contributors a
 - Map 3's default Residential Melbourne view excludes the seven flagged central/distortion SA2s; the All Melbourne view includes them while still applying the population floor.
 - Map 3 uses 2024 ERP age/sex population as the denominator for 2025 because the ERP source currently ends at 2024.
 - Map 3 sets per-1,000 and change metrics to missing where working-age population is zero, avoiding `inf` values in downstream CSV/HTML outputs.
+- Map 3 includes an `ALL` aggregate plus 19 ANZSIC division filters; the `ALL` rows must match `map3_home_business_density.csv` exactly.
 - Map 3 uses two Plotly figures inside one HTML scaffold so both views retain independent year-slider and Play/Pause animation state.
+- Map 3 stores the industry-filter data in one compact JavaScript payload and updates the active trace with `Plotly.react()` instead of preloading all industry/year/view trace combinations.
 - Map 3 Plotly HTML inlines Plotly.js, but the Carto/OpenStreetMap basemap tiles still require internet access at view time.
+- `scripts/map3_presentation_insights.py` is a pandas-only helper that reads processed Map 3 tables and prints presentation numbers; it should not create map outputs.
