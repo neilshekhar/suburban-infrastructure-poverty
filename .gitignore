@@ -6,6 +6,7 @@ __pycache__/
 .DS_Store
 **/.DS_Store
 .vscode/
+graphify-out/
 
 # Local data and exports live in Mediaflux, not Git.
 data/

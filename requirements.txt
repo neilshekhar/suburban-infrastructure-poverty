@@ -5,3 +5,6 @@ pyproj==3.7.2
 fiona
 jupyter
 keplergl
+openpyxl==3.1.5
+plotly==6.7.0
+kaleido==1.2.0

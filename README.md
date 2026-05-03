@@ -1,19 +1,22 @@
 # Suburban Infrastructure Poverty
 
-Suburban Infrastructure Poverty is an MDAP / Suburban Futures project at the University of Melbourne that maps infrastructure poverty across Greater Melbourne. The project combines recent population growth with public infrastructure locations to identify suburbs where services and facilities may not be keeping pace with growth.
+Suburban Infrastructure Poverty is an MDAP / Suburban Futures project at the University of Melbourne that maps infrastructure poverty and related suburban change patterns across Greater Melbourne. The project currently includes infrastructure-poverty maps built from population growth and public facility locations, plus a home-based business density map showing where Melbourne's non-employing business economy is concentrated and changing over time.
 
 ## Data Sources
 
-The analysis uses Australian Bureau of Statistics estimated resident population data to 2024 and Vicmap Features of Interest infrastructure data. The local data files used by the notebook, including `population.gpkg`, `melbourne.gpkg`, Vicmap shapefiles, and generated Kepler deliverables, are stored in the project Mediaflux collection
+The infrastructure-poverty workflow uses Australian Bureau of Statistics estimated resident population data to 2024 and Vicmap Features of Interest infrastructure data. The home-based business workflow uses ABS Counts of Australian Businesses, including Entries and Exits (CABEE) SA2-by-industry-by-employment-size releases and ABS Estimated Resident Population by age and sex.
+
+The local data files used by the notebooks, including `population.gpkg`, `melbourne.gpkg`, Vicmap shapefiles, CABEE Excel workbooks, ERP age/sex Excel workbooks, and generated map deliverables, are stored in the project Mediaflux collection.
 
 ## Repository Contents
 
 This GitHub repo contains only lightweight, reproducible project files:
 
-- `notebooks/infra_map.ipynb`: the active end-to-end analysis notebook.
+- `notebooks/infra_map.ipynb`: the active end-to-end infrastructure-poverty workflow.
+- `notebooks/home_business_map.ipynb`: the active Map 3 workflow for home-based business density.
 - `README.md`, `CONVENTIONS.md`, `requirements.txt`, and `.gitignore`: project documentation and setup files.
 
-The repo should not include local data, processed GeoPackages, exported GeoJSON/CSV files, Kepler HTML files, or Kepler `*_config.json` exports. Those files live in Mediaflux and are ignored by Git.
+The repo should not include local data, processed GeoPackages, exported GeoJSON/CSV files, Kepler HTML files, Plotly HTML files, preview PNG files, or Kepler `*_config.json` exports. Those files live in Mediaflux and are ignored by Git.
 
 Notebook files are committed without saved cell outputs. This keeps GitHub lightweight and prevents local absolute paths or large data previews from being published.
 
@@ -32,19 +35,25 @@ pip install -r requirements.txt
 
 If you use VS Code or Jupyter, select the `.venv` kernel before running the notebook.
 
-If you rerun the notebook before committing, clear outputs again while keeping code cells intact:
+If you rerun notebooks before committing, clear outputs again while keeping code cells intact:
 
 ```bash
-jupyter nbconvert --clear-output --inplace notebooks/infra_map.ipynb
+jupyter nbconvert --clear-output --inplace notebooks/infra_map.ipynb notebooks/home_business_map.ipynb
 ```
 
 ## How To Run
 
+### Infrastructure Poverty
+
 Open `notebooks/infra_map.ipynb`. In the first configuration cell, edit `POPULATION_PATH` and `INFRA_PATH` so they point to the local Mediaflux copies of `population.gpkg` and `FOI_POINT.shp`. Then run all cells from top to bottom.
+
+### Home-Based Business Density
+
+Open `notebooks/home_business_map.ipynb`. The notebook has three main sections: source-file inspection, analysis-table build, and map-output build. Confirm the CABEE Excel workbooks, ERP age/sex workbook, and `melbourne.gpkg` are available in the expected local `data/` paths from Mediaflux, then run the relevant cells from top to bottom.
 
 ## Outputs
 
-The working notebook produces five export files for downstream mapping and review:
+`notebooks/infra_map.ipynb` produces five export files for downstream mapping and review:
 
 - `kepler_population_growth.geojson`: Current Infrastructure Poverty polygon layer with SA2 population growth and facility count metrics using facilities created by `2024-12-31`.
 - `kepler_infrastructure_points.geojson`: Current Infrastructure Poverty point layer with infrastructure facilities categorized for Kepler.gl and created by `2024-12-31`.
@@ -56,11 +65,24 @@ Export files are stored in Mediaflux, not GitHub.
 
 Kepler map deliverables are also stored in Mediaflux, including HTML exports such as `current_infrastructure_poverty.html` and `infrastructure_poverty_timeline.html`, and their paired configuration exports `current_infrastructure_poverty_config.json` and `infrastructure_poverty_timeline_config.json`.
 
+`notebooks/home_business_map.ipynb` produces these local deliverables for Map 3:
+
+- `map3_home_business_density.csv`: tidy SA2-year table for 2019-2025 with non-employing businesses, working-age population, per-1,000 metrics, change since 2019, and view-inclusion flags.
+- `map3_home_business_pipeline_log.txt`: pipeline sanity log for QA and methodology review.
+- `home_business_density.html`: interactive Plotly map with Residential Melbourne and All Melbourne view toggles, year sliders, and Play/Pause animation controls.
+- `home_business_density_2025_preview.png`: static 2025 preview image for slides or review.
+
+These Map 3 data and map outputs are stored in Mediaflux, not GitHub.
+
 ## Current Infrastructure Poverty vs Infrastructure Poverty Timeline
 
 Current Infrastructure Poverty is the current-period (2024) view. It uses 2021-baseline population growth metrics, 2024 population, and facilities created on or before `2024-12-31` to show where Greater Melbourne suburbs have added people without a comparable level of facilities and services.
 
 Infrastructure Poverty Timeline is the time-series view. It uses a 2010 baseline to animate population growth and infrastructure availability through 2024, making it easier to see whether service provision has kept pace over time. Timeline polygon counts are annual `June 30` snapshots, while point facilities animate by their actual creation dates; therefore the 2024 timeline polygon tooltip may differ slightly from the full-year Current Infrastructure Poverty snapshot.
+
+## Home-Based Business Density
+
+Home-Based Business Density is Map 3. It maps non-employing businesses per 1,000 working-age residents by SA2 from 2019 to 2025, using working-age population aged 15-64 as the denominator. The default view focuses on Residential Melbourne by excluding SA2s with working-age population below 500 and showing seven CBD/Southbank/industrial-estate SA2s only in the alternate view; the alternate view keeps the same population floor but includes those flagged central/distortion areas.
 
 ## Contributors
 
