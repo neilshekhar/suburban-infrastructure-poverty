@@ -13,8 +13,8 @@ The local data files used by the notebooks, including `population.gpkg`, `melbou
 This GitHub repo contains only lightweight, reproducible project files:
 
 - `notebooks/infra_map.ipynb`: the active end-to-end infrastructure-poverty workflow.
-- `notebooks/home_business_map.ipynb`: the active Map 3 workflow for self-employed business density.
-- `scripts/map3_presentation_insights.py`: pandas-only helper script for presentation headline numbers from the processed Map 3 tables.
+- `notebooks/self_employed_business_density.ipynb`: the active workflow for the self-employed business density map.
+- `scripts/self_employed_business_insights.py`: pandas-only helper script for presentation headline numbers from the processed self-employed business tables.
 - `README.md`, `CONVENTIONS.md`, `requirements.txt`, and `.gitignore`: project documentation and setup files.
 
 The repo should not include local data, processed GeoPackages, exported GeoJSON/CSV files, Kepler HTML files, Plotly HTML files, preview PNG files, or Kepler `*_config.json` exports. Those files live in Mediaflux and are ignored by Git.
@@ -39,7 +39,7 @@ If you use VS Code or Jupyter, select the `.venv` kernel before running the note
 If you rerun notebooks before committing, clear outputs again while keeping code cells intact:
 
 ```bash
-jupyter nbconvert --clear-output --inplace notebooks/infra_map.ipynb notebooks/home_business_map.ipynb
+jupyter nbconvert --clear-output --inplace notebooks/infra_map.ipynb notebooks/self_employed_business_density.ipynb
 ```
 
 ## How To Run
@@ -50,12 +50,12 @@ Open `notebooks/infra_map.ipynb`. In the first configuration cell, edit `POPULAT
 
 ### Self-Employed Business Density
 
-Open `notebooks/home_business_map.ipynb`. The notebook has three main sections: source-file inspection, analysis-table build, and map-output build. Confirm the CABEE Excel workbooks, ERP age/sex workbook, and `melbourne.gpkg` are available in the expected local `data/` paths from Mediaflux, then run the relevant cells from top to bottom.
+Open `notebooks/self_employed_business_density.ipynb`. The notebook has three main sections: source-file inspection, analysis-table build, and map-output build. Confirm the CABEE Excel workbooks, ERP age/sex workbook, and `melbourne.gpkg` are available in the expected local `data/` paths from Mediaflux, then run the relevant cells from top to bottom.
 
-To print the Map 3 presentation insight numbers from the processed tables, run:
+To print the self-employed business presentation insight numbers from the processed tables, run:
 
 ```bash
-python scripts/map3_presentation_insights.py
+python scripts/self_employed_business_insights.py
 ```
 
 ## Outputs
@@ -72,15 +72,15 @@ Export files are stored in Mediaflux, not GitHub.
 
 Kepler map deliverables are also stored in Mediaflux, including HTML exports such as `current_infrastructure_poverty.html` and `infrastructure_poverty_timeline.html`, and their paired configuration exports `current_infrastructure_poverty_config.json` and `infrastructure_poverty_timeline_config.json`.
 
-The Map 3 notebook and presentation-insights script produce these local deliverables:
+The self-employed business notebook and presentation-insights script produce these local deliverables:
 
-- `map3_home_business_density.csv`: tidy SA2-year table for 2019-2025 with non-employing businesses, working-age population, per-1,000 metrics, change since 2019, and view-inclusion flags.
-- `map3_home_business_density_by_industry.csv`: industry-preserved SA2-year table used by the interactive industry filter.
-- `map3_presentation_insights_summary.csv`: compact summary table of presentation headline numbers from `scripts/map3_presentation_insights.py`.
-- `home_business_density.html`: interactive Plotly map with Residential Melbourne and All Melbourne view toggles, year sliders, and Play/Pause animation controls.
-- `home_business_density_2025_preview.png`: static 2025 preview image for slides or review.
+- `self_employed_business_density.csv`: tidy SA2-year table for 2019-2024 with non-employing businesses, working-age population, per-1,000 metrics, change since 2019, and view-inclusion flags.
+- `self_employed_business_density_by_industry.csv`: industry-preserved SA2-year table used by the interactive industry filter.
+- `self_employed_business_insights_summary.csv`: compact summary table of presentation headline numbers from `scripts/self_employed_business_insights.py`.
+- `self_employed_business_density.html`: interactive Plotly map with Residential Melbourne and All Melbourne view toggles, year sliders, and Play/Pause animation controls.
+- `self_employed_business_density_2024_preview.png`: static 2024 preview image for slides or review.
 
-These Map 3 data and map outputs are stored in Mediaflux, not GitHub.
+These self-employed business data and map outputs are stored in Mediaflux, not GitHub.
 
 ## Current Infrastructure Poverty vs Infrastructure Poverty Timeline
 
@@ -90,7 +90,7 @@ Infrastructure Poverty Timeline is the time-series view. It uses a 2010 baseline
 
 ## Self-Employed Business Density
 
-Self-Employed Business Density is Map 3. It maps non-employing businesses per 1,000 working-age residents by SA2 from 2019 to 2025, using working-age population aged 15-64 as the denominator. The default view focuses on Residential Melbourne by excluding SA2s with working-age population below 500 and showing seven CBD/Southbank/industrial-estate SA2s only in the alternate view; the alternate view keeps the same population floor but includes those flagged central/distortion areas. The interactive HTML includes an industry filter so the aggregate self-employed pattern can be compared with ANZSIC division-specific patterns.
+Self-Employed Business Density maps non-employing businesses per 1,000 working-age residents by SA2 from 2019 to 2024, using working-age population aged 15-64 as the denominator. The workflow stops at 2024 because the ERP age/sex population source currently ends at 2024. The default view focuses on Residential Melbourne by excluding SA2s with working-age population below 500 and showing seven CBD/Southbank/industrial-estate SA2s only in the alternate view; the alternate view keeps the same population floor but includes those flagged central/distortion areas. The interactive HTML includes an industry filter so the aggregate self-employed pattern can be compared with ANZSIC division-specific patterns.
 
 ## Contributors
 

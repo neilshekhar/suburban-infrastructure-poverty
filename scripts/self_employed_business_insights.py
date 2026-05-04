@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Insight numbers for Map 3 self-employed business density.
+"""Insight numbers for self-employed business density.
 
 Run from the repository root:
 
-    python scripts/map3_presentation_insights.py
+    python scripts/self_employed_business_insights.py
 
 The script intentionally uses only the Python standard library and pandas.
 If a processed SA2->council lookup exists it will use that; otherwise it
@@ -23,11 +23,11 @@ import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROCESSED_DIR = REPO_ROOT / "data" / "processed"
-AGGREGATE_PATH = PROCESSED_DIR / "map3_home_business_density.csv"
-BY_INDUSTRY_PATH = PROCESSED_DIR / "map3_home_business_density_by_industry.csv"
+AGGREGATE_PATH = PROCESSED_DIR / "self_employed_business_density.csv"
+BY_INDUSTRY_PATH = PROCESSED_DIR / "self_employed_business_density_by_industry.csv"
 LOOKUP_PATH = PROCESSED_DIR / "sa2_council_lookup.csv"
 GPKG_PATH = PROCESSED_DIR / "melbourne.gpkg"
-SUMMARY_OUTPUT = PROCESSED_DIR / "map3_presentation_insights_summary.csv"
+SUMMARY_OUTPUT = PROCESSED_DIR / "self_employed_business_insights_summary.csv"
 
 
 CORRIDOR_LGAS = ["Wyndham", "Melton", "Hume", "Whittlesea", "Casey", "Cardinia", "Mitchell"]
@@ -74,6 +74,9 @@ ANZSIC_DIVISIONS = {
     "S": "Other Services",
 }
 
+
+START_YEAR = 2019
+LATEST_YEAR = 2024
 
 SELECTED_INDUSTRIES = ["I", "E", "M", "L"]
 
@@ -337,10 +340,10 @@ def assign_cluster(council: str, middle_lgas: set[str]) -> str:
     return "unknown"
 
 
-def top_industries_for_cluster(industry_2025: pd.DataFrame, cluster: str, total: float, n: int = 5) -> pd.DataFrame:
+def top_industries_for_cluster(industry_latest: pd.DataFrame, cluster: str, total: float, n: int = 5) -> pd.DataFrame:
     grouped = (
-        industry_2025[
-            industry_2025["cluster"].eq(cluster) & industry_2025["industry_division"].ne("ALL")
+        industry_latest[
+            industry_latest["cluster"].eq(cluster) & industry_latest["industry_division"].ne("ALL")
         ]
         .groupby("industry_division", as_index=False)["non_employing_count"]
         .sum()
@@ -350,7 +353,7 @@ def top_industries_for_cluster(industry_2025: pd.DataFrame, cluster: str, total:
     return grouped.sort_values("share_pct", ascending=False).head(n)
 
 
-def top_sa2_by_density(frame: pd.DataFrame, industry_code: str, cluster: str, year: int = 2025, n: int = 10) -> pd.DataFrame:
+def top_sa2_by_density(frame: pd.DataFrame, industry_code: str, cluster: str, year: int = LATEST_YEAR, n: int = 10) -> pd.DataFrame:
     return (
         frame[
             frame["year"].eq(year)
@@ -402,7 +405,7 @@ def count_for(frame: pd.DataFrame, year: int, industry_code: str, cluster: str |
     return int(filtered["non_employing_count"].sum())
 
 
-def total_for_cluster(industry_frame: pd.DataFrame, cluster: str, year: int = 2025) -> int:
+def total_for_cluster(industry_frame: pd.DataFrame, cluster: str, year: int = LATEST_YEAR) -> int:
     return count_for(industry_frame, year, "ALL", cluster=cluster)
 
 
@@ -434,19 +437,19 @@ def main() -> None:
 
     summary_rows = []
 
-    print("Map 3 Presentation Insights - Self-Employed Business Density")
+    print("Self-Employed Business Density - Presentation Insights")
     print(f"Lookup source: {lookup_source}")
     print(f"Primary-view SA2s: {aggregate_primary['sa2_code'].nunique():,}")
     print(f"Primary-view LGAs: {len(present_lgas):,}")
     print(f"LGA name normalisations applied at runtime: {'none' if not normalised_seen else normalised_seen}")
     print(f"Configured corridor/inner LGAs missing from primary-view data: {'none' if not missing_named_lgas else ', '.join(missing_named_lgas)}")
 
-    print_header("Analysis 1 - Industry mix by LGA cluster, 2025")
-    industry_2025 = industry_primary[industry_primary["year"].eq(2025)].copy()
-    cluster_totals = {cluster: total_for_cluster(industry_primary, cluster, 2025) for cluster in ["corridor", "inner", "middle"]}
+    print_header("Analysis 1 - Industry mix by LGA cluster, 2024")
+    industry_latest = industry_primary[industry_primary["year"].eq(LATEST_YEAR)].copy()
+    cluster_totals = {cluster: total_for_cluster(industry_primary, cluster, LATEST_YEAR) for cluster in ["corridor", "inner", "middle"]}
     for cluster in ["corridor", "inner", "middle"]:
         print(f"\n{cluster.title()} cluster total self-employed businesses: {fmt_int(cluster_totals[cluster])}")
-        top5 = top_industries_for_cluster(industry_2025, cluster, cluster_totals[cluster])
+        top5 = top_industries_for_cluster(industry_latest, cluster, cluster_totals[cluster])
         for row in top5.itertuples(index=False):
             print(
                 f"  {row.industry:<55} "
@@ -458,11 +461,11 @@ def main() -> None:
     for code in SELECTED_INDUSTRIES:
         values = []
         for cluster in ["corridor", "inner", "middle"]:
-            count = count_for(industry_primary, 2025, code, cluster=cluster)
+            count = count_for(industry_primary, LATEST_YEAR, code, cluster=cluster)
             values.append(fmt_pct(pct(count, cluster_totals[cluster])))
         print(f"{industry_label(code):<55} {values[0]:>10} {values[1]:>10} {values[2]:>10}")
-    corridor_transport_share = pct(count_for(industry_primary, 2025, "I", "corridor"), cluster_totals["corridor"])
-    inner_prof_share = pct(count_for(industry_primary, 2025, "M", "inner"), cluster_totals["inner"])
+    corridor_transport_share = pct(count_for(industry_primary, LATEST_YEAR, "I", "corridor"), cluster_totals["corridor"])
+    inner_prof_share = pct(count_for(industry_primary, LATEST_YEAR, "M", "inner"), cluster_totals["inner"])
     print(
         "Interpretation: Corridor self-employment is dominated by Transport-PSW "
         f"({fmt_pct(corridor_transport_share)}), while the inner cluster's biggest signal is "
@@ -471,13 +474,13 @@ def main() -> None:
     summary_rows.append(
         {
             "analysis": "1",
-            "label": "corridor_transport_share_2025_pct",
+            "label": "corridor_transport_share_2024_pct",
             "value": round(corridor_transport_share, 2),
-            "headline": f"Transport-PSW is {fmt_pct(corridor_transport_share)} of corridor self-employed businesses in 2025.",
+            "headline": f"Transport-PSW is {fmt_pct(corridor_transport_share)} of corridor self-employed businesses in 2024.",
         }
     )
 
-    print_header("Analysis 2 - Transport-PSW SA2 league table, corridors only, 2025")
+    print_header("Analysis 2 - Transport-PSW SA2 league table, corridors only, 2024")
     transport_top10 = top_sa2_by_density(industry_primary, "I", "corridor")
     print_sa2_table(transport_top10, include_working_age=True)
     top_transport = transport_top10.iloc[0]
@@ -488,9 +491,9 @@ def main() -> None:
     summary_rows.append(
         {
             "analysis": "2",
-            "label": "top_corridor_transport_sa2_density_2025",
+            "label": "top_corridor_transport_sa2_density_2024",
             "value": round(float(top_transport["non_employing_per_1000_working_age"]), 2),
-            "headline": f"{top_transport['sa2_name']} leads corridor Transport-PSW density in 2025.",
+            "headline": f"{top_transport['sa2_name']} leads corridor Transport-PSW density in 2024.",
         }
     )
 
@@ -510,12 +513,12 @@ def main() -> None:
         )
     metro_2019 = count_for(industry_primary, 2019, "I")
     metro_2021 = count_for(industry_primary, 2021, "I")
-    metro_2025 = count_for(industry_primary, 2025, "I")
+    metro_latest = count_for(industry_primary, LATEST_YEAR, "I")
     corridor_2019 = count_for(industry_primary, 2019, "I", "corridor")
     corridor_2021 = count_for(industry_primary, 2021, "I", "corridor")
-    corridor_2025 = count_for(industry_primary, 2025, "I", "corridor")
-    metro_early_share = pct(metro_2021 - metro_2019, metro_2025 - metro_2019)
-    corridor_early_share = pct(corridor_2021 - corridor_2019, corridor_2025 - corridor_2019)
+    corridor_latest = count_for(industry_primary, LATEST_YEAR, "I", "corridor")
+    metro_early_share = pct(metro_2021 - metro_2019, metro_latest - metro_2019)
+    corridor_early_share = pct(corridor_2021 - corridor_2019, corridor_latest - corridor_2019)
     structural = metro_early_share < 50 and corridor_early_share < 50
     print(
         "Interpretation: Growth is "
@@ -528,11 +531,11 @@ def main() -> None:
             "analysis": "3",
             "label": "transport_growth_pattern",
             "value": round(metro_early_share, 2),
-            "headline": f"2019-2021 accounts for {fmt_pct(metro_early_share)} of 2019-2025 metro Transport-PSW growth.",
+            "headline": f"2019-2021 accounts for {fmt_pct(metro_early_share)} of 2019-2024 metro Transport-PSW growth.",
         }
     )
 
-    print_header("Analysis 4 - Construction comparison, corridors only, 2025")
+    print_header("Analysis 4 - Construction comparison, corridors only, 2024")
     construction_top10 = top_sa2_by_density(industry_primary, "E", "corridor")
     print_sa2_table(construction_top10, include_working_age=True)
     overlap = sorted(set(transport_top10["sa2_code"]).intersection(set(construction_top10["sa2_code"])))
@@ -552,7 +555,7 @@ def main() -> None:
         }
     )
 
-    print_header("Analysis 5 - Inner-suburb top SA2s for Professional Services, 2025")
+    print_header("Analysis 5 - Inner-suburb top SA2s for Professional Services, 2024")
     professional_top10 = top_sa2_by_density(industry_primary, "M", "inner")
     print_sa2_table(professional_top10, include_working_age=False)
     top_prof = professional_top10.iloc[0]
@@ -563,22 +566,22 @@ def main() -> None:
     summary_rows.append(
         {
             "analysis": "5",
-            "label": "top_inner_professional_services_sa2_density_2025",
+            "label": "top_inner_professional_services_sa2_density_2024",
             "value": round(float(top_prof["non_employing_per_1000_working_age"]), 2),
-            "headline": f"{top_prof['sa2_name']} leads inner Professional Services density in 2025.",
+            "headline": f"{top_prof['sa2_name']} leads inner Professional Services density in 2024.",
         }
     )
 
     print_header("Analysis 6 - Corridor share of Greater Melbourne Transport-PSW growth")
     metro_i_2019 = count_for(industry_primary, 2019, "I")
-    metro_i_2025 = count_for(industry_primary, 2025, "I")
+    metro_i_latest = count_for(industry_primary, LATEST_YEAR, "I")
     corridor_i_2019 = count_for(industry_primary, 2019, "I", "corridor")
-    corridor_i_2025 = count_for(industry_primary, 2025, "I", "corridor")
-    metro_increase = metro_i_2025 - metro_i_2019
-    corridor_increase = corridor_i_2025 - corridor_i_2019
+    corridor_i_latest = count_for(industry_primary, LATEST_YEAR, "I", "corridor")
+    metro_increase = metro_i_latest - metro_i_2019
+    corridor_increase = corridor_i_latest - corridor_i_2019
     corridor_growth_share = pct(corridor_increase, metro_increase)
-    print(f"Greater Melbourne Transport-PSW count: 2019={fmt_int(metro_i_2019)}, 2025={fmt_int(metro_i_2025)}, increase={fmt_int(metro_increase)}")
-    print(f"Corridor LGA Transport-PSW count:     2019={fmt_int(corridor_i_2019)}, 2025={fmt_int(corridor_i_2025)}, increase={fmt_int(corridor_increase)}")
+    print(f"Greater Melbourne Transport-PSW count: 2019={fmt_int(metro_i_2019)}, {LATEST_YEAR}={fmt_int(metro_i_latest)}, increase={fmt_int(metro_increase)}")
+    print(f"Corridor LGA Transport-PSW count:     2019={fmt_int(corridor_i_2019)}, {LATEST_YEAR}={fmt_int(corridor_i_latest)}, increase={fmt_int(corridor_increase)}")
     print(f"Corridor share of metro increase:     {fmt_pct(corridor_growth_share)}")
     print(
         "Interpretation: This is the headline number - corridor LGAs captured "
@@ -589,15 +592,15 @@ def main() -> None:
             "analysis": "6",
             "label": "corridor_share_of_metro_transport_growth_pct",
             "value": round(corridor_growth_share, 2),
-            "headline": f"Corridor LGAs captured {fmt_pct(corridor_growth_share)} of metro Transport-PSW growth from 2019 to 2025.",
+            "headline": f"Corridor LGAs captured {fmt_pct(corridor_growth_share)} of metro Transport-PSW growth from 2019 to 2024.",
         }
     )
 
-    print_header("Analysis 7 - Rental/Real Estate concentration check for inner suburbs, 2025")
-    inner_l_count = count_for(industry_primary, 2025, "L", "inner")
-    inner_all_count = count_for(industry_primary, 2025, "ALL", "inner")
-    metro_l_count = count_for(industry_primary, 2025, "L")
-    metro_all_count = count_for(industry_primary, 2025, "ALL")
+    print_header("Analysis 7 - Rental/Real Estate concentration check for inner suburbs, 2024")
+    inner_l_count = count_for(industry_primary, LATEST_YEAR, "L", "inner")
+    inner_all_count = count_for(industry_primary, LATEST_YEAR, "ALL", "inner")
+    metro_l_count = count_for(industry_primary, LATEST_YEAR, "L")
+    metro_all_count = count_for(industry_primary, LATEST_YEAR, "ALL")
     inner_l_share = pct(inner_l_count, inner_all_count)
     metro_l_share = pct(metro_l_count, metro_all_count)
     inner_to_metro_ratio = inner_l_share / metro_l_share if metro_l_share else math.nan
