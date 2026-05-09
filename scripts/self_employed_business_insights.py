@@ -28,6 +28,7 @@ BY_INDUSTRY_PATH = PROCESSED_DIR / "self_employed_business_density_by_industry.c
 LOOKUP_PATH = PROCESSED_DIR / "sa2_council_lookup.csv"
 GPKG_PATH = PROCESSED_DIR / "melbourne.gpkg"
 SUMMARY_OUTPUT = PROCESSED_DIR / "self_employed_business_insights_summary.csv"
+RATES_OUTPUT = PROCESSED_DIR / "self_employed_business_density_rates.csv"
 
 
 CORRIDOR_LGAS = ["Wyndham", "Melton", "Hume", "Whittlesea", "Casey", "Cardinia", "Mitchell"]
@@ -79,6 +80,10 @@ START_YEAR = 2019
 LATEST_YEAR = 2024
 
 SELECTED_INDUSTRIES = ["I", "E", "M", "L"]
+RATE_VIEWS = {
+    "Residential": "include_in_primary_view",
+    "All": "include_in_alternate_view",
+}
 
 
 def pct(numerator: float, denominator: float) -> float:
@@ -409,6 +414,34 @@ def total_for_cluster(industry_frame: pd.DataFrame, cluster: str, year: int = LA
     return count_for(industry_frame, year, "ALL", cluster=cluster)
 
 
+def write_melbourne_rate_table(industry_frame: pd.DataFrame) -> pd.DataFrame:
+    industry_order = ["ALL"] + list(ANZSIC_DIVISIONS)
+    rows = []
+    for industry in industry_order:
+        for view, include_col in RATE_VIEWS.items():
+            for year in range(START_YEAR, LATEST_YEAR + 1):
+                eligible = industry_frame[
+                    industry_frame["industry_division"].eq(industry)
+                    & industry_frame["year"].eq(year)
+                    & industry_frame[include_col]
+                ]
+                working_age_pop = eligible["working_age_pop"].dropna().sum()
+                business_count = eligible["non_employing_count"].dropna().sum()
+                rows.append(
+                    {
+                        "industry": industry,
+                        "view": view,
+                        "year": year,
+                        "melbourne_rate": (
+                            float(business_count) / float(working_age_pop) * 1000 if working_age_pop else math.nan
+                        ),
+                    }
+                )
+    rates = pd.DataFrame(rows, columns=["industry", "view", "year", "melbourne_rate"])
+    rates.to_csv(RATES_OUTPUT, index=False)
+    return rates
+
+
 def main() -> None:
     aggregate = read_required_csv(AGGREGATE_PATH, dtype={"sa2_code": str})
     by_industry = read_required_csv(BY_INDUSTRY_PATH, dtype={"sa2_code": str})
@@ -416,6 +449,7 @@ def main() -> None:
     lookup, lookup_source = load_sa2_council_lookup()
     aggregate = attach_council(aggregate, lookup)
     by_industry = attach_council(by_industry, lookup)
+    melbourne_rate_table = write_melbourne_rate_table(by_industry)
 
     aggregate_primary = aggregate[aggregate["include_in_primary_view"]].copy()
     industry_primary = by_industry[by_industry["include_in_primary_view"]].copy()
@@ -443,6 +477,7 @@ def main() -> None:
     print(f"Primary-view LGAs: {len(present_lgas):,}")
     print(f"LGA name normalisations applied at runtime: {'none' if not normalised_seen else normalised_seen}")
     print(f"Configured corridor/inner LGAs missing from primary-view data: {'none' if not missing_named_lgas else ', '.join(missing_named_lgas)}")
+    print(f"Melbourne rate table written: {RATES_OUTPUT.relative_to(REPO_ROOT)} ({len(melbourne_rate_table):,} rows)")
 
     print_header("Analysis 1 - Industry mix by LGA cluster, 2024")
     industry_latest = industry_primary[industry_primary["year"].eq(LATEST_YEAR)].copy()
