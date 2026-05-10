@@ -72,12 +72,13 @@ Export files are stored in Mediaflux, not GitHub.
 
 Kepler map deliverables are also stored in Mediaflux, including HTML exports such as `current_infrastructure_poverty.html` and `infrastructure_poverty_timeline.html`, and their paired configuration exports `current_infrastructure_poverty_config.json` and `infrastructure_poverty_timeline_config.json`.
 
-The self-employed business notebook and presentation-insights script produce these local deliverables:
+The self-employed business workflow produces these local deliverables:
 
 - `self_employed_business_density.csv`: tidy SA2-year table for 2019-2024 with non-employing businesses, working-age population, per-1,000 metrics, change since 2019, and view-inclusion flags.
 - `self_employed_business_density_by_industry.csv`: industry-preserved SA2-year table used by the interactive industry filter.
-- `self_employed_business_insights_summary.csv`: compact summary table of presentation headline numbers from `scripts/self_employed_business_insights.py`.
-- `self_employed_business_density.html`: interactive Plotly map with Residential Melbourne and All Melbourne view toggles, year sliders, and Play/Pause animation controls.
+- `self_employed_business_density_rates.csv`: industry-view-year Greater Melbourne average rates written by `scripts/self_employed_business_insights.py`; the notebook builds the same lookup in memory for tooltip comparisons.
+- `self_employed_business_insights_summary.csv`: compact summary table of presentation headline numbers written by `scripts/self_employed_business_insights.py`.
+- `self_employed_business_density.html`: interactive Plotly map with industry filtering, suburb/area search, Residential Melbourne and All Melbourne views, year sliders, Play/Pause animation controls, footer attribution, and a five-step Story Mode walkthrough.
 - `self_employed_business_density_2024_preview.png`: static 2024 preview image for slides or review.
 
 These self-employed business data and map outputs are stored in Mediaflux, not GitHub.
@@ -90,10 +91,13 @@ Infrastructure Poverty Timeline is the time-series view. It uses a 2010 baseline
 
 ## Self-Employed Business Density
 
-Self-Employed Business Density maps non-employing businesses per 1,000 working-age residents by SA2 from 2019 to 2024, using working-age population aged 15-64 as the denominator. The workflow stops at 2024 because the ERP age/sex population source currently ends at 2024. The default view focuses on Residential Melbourne by excluding SA2s with working-age population below 500 and showing seven CBD/Southbank/industrial-estate SA2s only in the alternate view; the alternate view keeps the same population floor but includes those flagged central/distortion areas. The interactive HTML includes an industry filter so the aggregate self-employed pattern can be compared with ANZSIC division-specific patterns.
+Self-Employed Business Density maps non-employing businesses per 1,000 working-age residents by SA2 from 2019 to 2024, using working-age population aged 15-64 as the denominator. The workflow stops at 2024 because the ERP age/sex population source currently ends at 2024. The default map view is All Melbourne, including the CBD and flagged central/distortion SA2s. Residential Melbourne keeps the same working-age population floor but excludes these seven SA2s for suburb-to-suburb residential comparison: Melbourne CBD - East, Melbourne CBD - North, Melbourne CBD - West, Docklands, Southbank - East, Southbank (West) - South Wharf, and Port Melbourne Industrial.
+
+The interactive HTML includes an industry filter, suburb/area search locator, year controls, comparison tooltips, footer attribution with ABS source links, and a Story Mode walkthrough. Tooltips compare each SA2 with the density-weighted Greater Melbourne average for the same industry, view, and year, not a simple mean across SA2s. Tooltip trend text shows both percent change and absolute per-1,000 change since 2019, while the bottom block keeps the raw business count, working-age residents, local per-1,000 rate, and Greater Melbourne average rate visible for auditability.
+
+Story Mode has five curated steps: CBD/inner vs middle-ring vs growth-corridor economies, the CBD/inner knowledge-work cluster, the middle-ring business base, the outer-corridor Transport-Postal-Warehousing surge, and the distinct construction-corridor pattern. In Story Mode, central + inner means the CBD plus Melbourne, Yarra, Port Phillip, Stonnington and Boroondara LGAs; middle ring means established suburbs outside that inner cluster and outside the fringe-growth councils; growth corridors means Wyndham, Melton, Hume, Whittlesea, Casey, Cardinia and Mitchell. Story Mode pins the map to All Melbourne (incl. CBD) for all steps regardless of the user's previous view so CBD and inner-suburb patterns remain visible. Manually changing the view toggle, industry filter, or year slider exits Story Mode and returns the map to free exploration.
 
 ## Contributors
-
 - Neil Shekhar
 - Amanda Belton
 - Emily Fitzgerald

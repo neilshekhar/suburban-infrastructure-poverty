@@ -84,6 +84,8 @@ RATE_VIEWS = {
     "Residential": "include_in_primary_view",
     "All": "include_in_alternate_view",
 }
+# Summary analyses below use the Residential Melbourne view for suburb-to-suburb
+# comparability; the map and Story Mode default to All Melbourne (incl. CBD).
 
 
 def pct(numerator: float, denominator: float) -> float:
@@ -577,10 +579,16 @@ def main() -> None:
     overlap_names = sorted(transport_top10[transport_top10["sa2_code"].isin(overlap)]["sa2_name"].unique())
     print(f"\nOverlap with Transport-PSW top 10: {len(overlap)} SA2s")
     print(f"Overlapping SA2s: {'none' if not overlap_names else ', '.join(overlap_names)}")
-    print(
-        "Interpretation: Construction overlaps partly with Transport-PSW, but the overlap count shows these are related "
-        "outer-corridor signals rather than identical SA2 rankings."
-    )
+    if overlap:
+        print(
+            "Interpretation: Construction and Transport-PSW share some outer-corridor geography, "
+            "but their top SA2 rankings are not identical."
+        )
+    else:
+        print(
+            "Interpretation: Construction and Transport-PSW are distinct corridor signals: "
+            "their top-10 SA2 lists do not overlap."
+        )
     summary_rows.append(
         {
             "analysis": "4",

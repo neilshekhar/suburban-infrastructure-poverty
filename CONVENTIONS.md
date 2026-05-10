@@ -28,7 +28,7 @@ These conventions capture non-obvious project decisions so future contributors a
 - The self-employed business density workflow uses non-employing businesses as the numerator and working-age residents aged 15-64 as the denominator.
 - The self-employed business density workflow uses a working-age population floor of `500`; rows below the floor remain in the CSV for audit but are excluded from both map views.
 - The self-employed business density workflow flags seven CBD/Southbank/industrial-estate SA2s separately instead of deleting them from the output.
-- The default Residential Melbourne view excludes the seven flagged central/distortion SA2s; the All Melbourne view includes them while still applying the population floor.
+- The default self-employed business map view is All Melbourne (incl. CBD); Residential Melbourne is available via the toggle and excludes the seven flagged central/distortion SA2s while still applying the population floor.
 - Per-1,000 and change metrics are set to missing where working-age population is zero, avoiding `inf` values in downstream CSV/HTML outputs.
 - The industry-filter table includes an `ALL` aggregate plus 19 ANZSIC division filters; the `ALL` rows must match `self_employed_business_density.csv` exactly.
 - The Plotly HTML uses two figures inside one scaffold so both views retain independent year-slider and Play/Pause animation state.
